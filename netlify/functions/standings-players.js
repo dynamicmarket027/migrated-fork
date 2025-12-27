@@ -1,6 +1,6 @@
 /**
  * Netlify Function: Standings Players
- * Devuelve la clasificación de jugadores desde Supabase
+ * Lee de player_standings
  */
 
 import { getPlayerStandings } from '../../lib/supabase.js';
@@ -9,58 +9,38 @@ const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Content-Type': 'application/json',
-  'Cache-Control': 'public, max-age=60'
+  'Content-Type': 'application/json'
 };
 
-export async function handler(event, context) {
-  // Handle CORS preflight
+export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' };
   }
 
-  // Solo GET
   if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   try {
-    // Obtener clasificación desde Supabase
     const standings = await getPlayerStandings();
 
     if (!standings || standings.length === 0) {
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify([])
-      };
+      return { statusCode: 200, headers, body: JSON.stringify([]) };
     }
 
-    // Formatear para compatibilidad con frontend existente
-    const formattedStandings = standings.map(player => ({
-      Posicion: player.position,
-      Jugador: player.username,
-      'Puntos ganados': player.points,
-      Aciertos: player.correctPredictions,
-      'Apuestas realizadas': player.matchdaysPlayed
+    // Formatear para el frontend existente
+    const formatted = standings.map(p => ({
+      Posicion: p.posicion,
+      Jugador: p.username,
+      'Puntos ganados': parseFloat(p.puntos_totales) || 0,
+      Aciertos: p.aciertos_totales || 0,
+      'Apuestas realizadas': p.jornadas_jugadas || 0
     }));
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(formattedStandings)
-    };
+    return { statusCode: 200, headers, body: JSON.stringify(formatted) };
 
   } catch (error) {
     console.error('[standings-players] Error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'Server error', details: error.message })
-    };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: error.message }) };
   }
 }

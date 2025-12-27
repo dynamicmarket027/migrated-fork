@@ -1,9 +1,9 @@
 /**
  * Netlify Function: History
- * Obtiene historial de apuestas desde Supabase
+ * Obtiene historial de predictions_history + points_by_matchday
  */
 
-import { getPlayerHistory } from '../../lib/supabase.js';
+import { getPlayerHistory, getPointsByMatchday } from '../../lib/supabase.js';
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
@@ -13,82 +13,60 @@ const headers = {
 
 export async function handler(event) {
   if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   try {
-    const params = event.queryStringParameters || {};
-    const jugador = params.jugador;
+    const { jugador } = event.queryStringParameters || {};
 
     if (!jugador) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Falta jugador' }) };
+    }
+
+    const [history, points] = await Promise.all([
+      getPlayerHistory(jugador),
+      getPointsByMatchday(jugador)
+    ]);
+
+    if (!history || history.length === 0) {
+      return { statusCode: 200, headers, body: JSON.stringify([]) };
+    }
+
+    // Crear mapa de puntos por jornada
+    const pointsMap = {};
+    points.forEach(p => {
+      pointsMap[p.jornada] = {
+        aciertos: p.aciertos,
+        suma_cuotas: parseFloat(p.suma_cuotas),
+        puntos: parseFloat(p.puntos)
+      };
+    });
+
+    // Formatear para el frontend existente (estructura plana)
+    const result = history.map(entry => {
+      const jornadaNum = entry.jornada.replace('Regular season - ', '');
+      const pts = pointsMap[entry.jornada] || { aciertos: 0, suma_cuotas: 0, puntos: 0 };
+      
       return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Missing jugador parameter' })
+        jornada: jornadaNum,
+        acierto_puntos: pts.aciertos,
+        cuota_puntos: pts.suma_cuotas,
+        resultado_puntos: pts.puntos,
+        equipo_Local: entry.equipo_local,
+        equipo_Visitante: entry.equipo_visitante,
+        pronostico: entry.pronostico,
+        cuota: parseFloat(entry.cuota),
+        resultado: entry.resultado_real,
+        acierto: entry.acierto,
+        dia: entry.fecha_apuesta,
+        hora: entry.fecha_apuesta
       };
-    }
+    });
 
-    const history = await getPlayerHistory(jugador);
-
-    // Agrupar por jornada para el frontend
-    const grouped = {};
-    
-    for (const entry of history) {
-      const matchday = entry.matchday;
-      
-      if (!grouped[matchday]) {
-        grouped[matchday] = {
-          jornada: matchday,
-          fecha: entry.created_at,
-          resumen: {
-            aciertos: 0,
-            fallos: 0,
-            pendientes: 0,
-            puntos: 0
-          },
-          partidos: []
-        };
-      }
-      
-      const partido = {
-        equipo_local: entry.home_team,
-        equipo_visitante: entry.away_team,
-        pronostico: entry.prediction,
-        cuota: parseFloat(entry.odds),
-        resultado_real: entry.actual_result,
-        acierto: entry.correct
-      };
-      
-      grouped[matchday].partidos.push(partido);
-      
-      if (entry.correct === true) {
-        grouped[matchday].resumen.aciertos++;
-        grouped[matchday].resumen.puntos += parseFloat(entry.points_earned) || 0;
-      } else if (entry.correct === false) {
-        grouped[matchday].resumen.fallos++;
-      } else {
-        grouped[matchday].resumen.pendientes++;
-      }
-    }
-
-    const result = Object.values(grouped).sort((a, b) => b.jornada - a.jornada);
-
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(result)
-    };
+    return { statusCode: 200, headers, body: JSON.stringify(result) };
 
   } catch (error) {
     console.error('[history] Error:', error);
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify([])
-    };
+    return { statusCode: 200, headers, body: JSON.stringify([]) };
   }
 }

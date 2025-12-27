@@ -1,6 +1,6 @@
 /**
  * Netlify Function: Check Bet
- * Verifica si un jugador ya apostó en una jornada
+ * Verifica si un jugador ya apostó
  */
 
 import { hasPlayerBet } from '../../lib/supabase.js';
@@ -13,40 +13,27 @@ const headers = {
 
 export async function handler(event) {
   if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   try {
-    const params = event.queryStringParameters || {};
-    const jugador = params.jugador;
-    const jornada = parseInt(params.jornada, 10);
+    const { jugador, jornada } = event.queryStringParameters || {};
 
     if (!jugador || !jornada) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Missing parameters' })
-      };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Faltan parámetros' }) };
     }
 
-    const hasBet = await hasPlayerBet(jugador, jornada);
+    // Convertir jornada a formato completo
+    const jornadaStr = jornada.includes('Regular season') 
+      ? jornada 
+      : `Regular season - ${jornada}`;
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ hasBet })
-    };
+    const hasBet = await hasPlayerBet(jugador, jornadaStr);
+
+    return { statusCode: 200, headers, body: JSON.stringify({ hasBet }) };
 
   } catch (error) {
     console.error('[check-bet] Error:', error);
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ hasBet: false })
-    };
+    return { statusCode: 200, headers, body: JSON.stringify({ hasBet: false }) };
   }
 }

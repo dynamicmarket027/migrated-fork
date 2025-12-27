@@ -1,9 +1,9 @@
 /**
  * Netlify Function: Current Bet
- * Obtiene la apuesta actual de un jugador
+ * Obtiene la apuesta actual del jugador
  */
 
-import { supabase } from '../../lib/supabase.js';
+import { getPlayerCurrentPredictions } from '../../lib/supabase.js';
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
@@ -13,73 +13,44 @@ const headers = {
 
 export async function handler(event) {
   if (event.httpMethod !== 'GET') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
+    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
   try {
-    const params = event.queryStringParameters || {};
-    const jugador = params.jugador;
+    const { jugador } = event.queryStringParameters || {};
 
     if (!jugador) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Missing jugador parameter' })
-      };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Falta jugador' }) };
     }
 
-    const { data, error } = await supabase
-      .from('predictions')
-      .select('*')
-      .eq('username', jugador.toLowerCase())
-      .order('matchday', { ascending: false });
+    const predictions = await getPlayerCurrentPredictions(jugador);
 
-    if (error) {
-      console.error('[current-bet] Supabase error:', error);
-      throw error;
+    if (!predictions || predictions.length === 0) {
+      return { statusCode: 200, headers, body: JSON.stringify({ matchday: null, bets: [] }) };
     }
 
-    if (!data || data.length === 0) {
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ matchday: null, bets: [] })
-      };
-    }
-
-    const matchday = data[0].matchday;
-    const betsForMatchday = data.filter(bet => bet.matchday === matchday);
+    // Extraer número de jornada
+    const jornadaStr = predictions[0].jornada;
+    const matchdayNum = parseInt(jornadaStr.replace('Regular season - ', ''), 10);
 
     const response = {
-      matchday,
-      timestamp: betsForMatchday[0]?.created_at,
-      bets: betsForMatchday.map(bet => ({
-        matchId: bet.match_id,
-        homeTeam: bet.home_team,
-        awayTeam: bet.away_team,
-        prediction: bet.prediction,
-        odds: parseFloat(bet.odds),
-        actualResult: null,
-        correct: null
+      matchday: matchdayNum,
+      timestamp: predictions[0].created_at,
+      bets: predictions.map(p => ({
+        matchId: p.id_partido,
+        homeTeam: p.equipo_local,
+        awayTeam: p.equipo_visitante,
+        prediction: p.pronostico,
+        odds: parseFloat(p.cuota),
+        actualResult: p.resultado_real,
+        correct: p.acierto
       }))
     };
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(response)
-    };
+    return { statusCode: 200, headers, body: JSON.stringify(response) };
 
   } catch (error) {
     console.error('[current-bet] Error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'Server error', details: error.message })
-    };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: error.message }) };
   }
 }

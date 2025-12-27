@@ -2,8 +2,6 @@
  * Netlify Function: Login
  */
 
-import bcrypt from 'bcryptjs';
-
 const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -11,7 +9,6 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-// Usuarios directamente en el código (más fiable en Netlify Functions)
 const USERS = [
   { "username": "p", "password": "soe" },
   { "username": "prueba0", "password": "prueba" },
@@ -46,65 +43,25 @@ export async function handler(event) {
   }
 
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ success: false, error: 'Method not allowed' })
-    };
+    return { statusCode: 405, headers, body: JSON.stringify({ success: false }) };
   }
 
   try {
-    const body = JSON.parse(event.body || '{}');
-    const { usuario, contrasena } = body;
+    const { usuario, contrasena } = JSON.parse(event.body || '{}');
 
     if (!usuario || !contrasena) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ success: false, error: 'Missing credentials' })
-      };
+      return { statusCode: 400, headers, body: JSON.stringify({ success: false }) };
     }
 
-    const user = USERS.find(
-      u => u.username.toLowerCase() === usuario.toLowerCase()
-    );
+    const user = USERS.find(u => u.username.toLowerCase() === usuario.toLowerCase());
 
-    if (!user) {
-      return {
-        statusCode: 401,
-        headers,
-        body: JSON.stringify({ success: false })
-      };
+    if (user && user.password === contrasena) {
+      return { statusCode: 200, headers, body: JSON.stringify({ success: true, usuario: user.username }) };
     }
 
-    let isValid = false;
-    
-    if (user.passwordHash) {
-      isValid = await bcrypt.compare(contrasena, user.passwordHash);
-    } else if (user.password) {
-      isValid = contrasena === user.password;
-    }
-
-    if (isValid) {
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ success: true, usuario: user.username })
-      };
-    } else {
-      return {
-        statusCode: 401,
-        headers,
-        body: JSON.stringify({ success: false })
-      };
-    }
+    return { statusCode: 401, headers, body: JSON.stringify({ success: false }) };
 
   } catch (error) {
-    console.error('[login] Error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ success: false, error: error.message })
-    };
+    return { statusCode: 500, headers, body: JSON.stringify({ success: false }) };
   }
 }
