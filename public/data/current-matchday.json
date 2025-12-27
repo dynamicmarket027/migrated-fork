@@ -1,0 +1,119 @@
+{
+  "$schema": "current-matchday",
+  "version": "1.0.0",
+  "matchday": 17,
+  "updatedAt": "2025-12-27T00:00:00Z",
+  "note": "Estos datos se actualizarán automáticamente desde football-data.org",
+  "matches": [
+    {
+      "id": 544371,
+      "matchday": 17,
+      "utcDate": "2025-12-20T20:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 77, "name": "Athletic Club" },
+      "awayTeam": { "id": 80, "name": "RCD Espanyol de Barcelona" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 1.70, "draw": 3.60, "away": 5.50 }
+    },
+    {
+      "id": 544372,
+      "matchday": 17,
+      "utcDate": "2025-12-21T16:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 90, "name": "Real Betis Balompié" },
+      "awayTeam": { "id": 275, "name": "Getafe CF" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 1.95, "draw": 3.40, "away": 4.40 }
+    },
+    {
+      "id": 544373,
+      "matchday": 17,
+      "utcDate": "2025-12-21T18:30:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 285, "name": "Elche CF" },
+      "awayTeam": { "id": 87, "name": "Rayo Vallecano de Madrid" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 2.60, "draw": 3.10, "away": 2.85 }
+    },
+    {
+      "id": 544374,
+      "matchday": 17,
+      "utcDate": "2025-12-21T21:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 745, "name": "Levante UD" },
+      "awayTeam": { "id": 92, "name": "Real Sociedad de Fútbol" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 3.60, "draw": 3.30, "away": 2.05 }
+    },
+    {
+      "id": 544375,
+      "matchday": 17,
+      "utcDate": "2025-12-22T16:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 86, "name": "Real Madrid CF" },
+      "awayTeam": { "id": 559, "name": "Sevilla FC" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 1.45, "draw": 4.50, "away": 6.50 }
+    },
+    {
+      "id": 544376,
+      "matchday": 17,
+      "utcDate": "2025-12-22T18:30:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 79, "name": "CA Osasuna" },
+      "awayTeam": { "id": 263, "name": "Deportivo Alavés" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 2.05, "draw": 3.20, "away": 4.00 }
+    },
+    {
+      "id": 544377,
+      "matchday": 17,
+      "utcDate": "2025-12-22T21:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 298, "name": "Girona FC" },
+      "awayTeam": { "id": 78, "name": "Club Atlético de Madrid" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 2.85, "draw": 3.25, "away": 2.45 }
+    },
+    {
+      "id": 544378,
+      "matchday": 17,
+      "utcDate": "2025-12-23T20:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 94, "name": "Villarreal CF" },
+      "awayTeam": { "id": 81, "name": "FC Barcelona" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 3.10, "draw": 3.60, "away": 2.15 }
+    },
+    {
+      "id": 544379,
+      "matchday": 17,
+      "utcDate": "2025-12-23T20:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 280, "name": "Real Oviedo" },
+      "awayTeam": { "id": 264, "name": "RC Celta de Vigo" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 3.10, "draw": 3.25, "away": 2.35 }
+    },
+    {
+      "id": 544380,
+      "matchday": 17,
+      "utcDate": "2025-12-23T20:00:00Z",
+      "status": "SCHEDULED",
+      "homeTeam": { "id": 95, "name": "Valencia CF" },
+      "awayTeam": { "id": 89, "name": "RCD Mallorca" },
+      "score": null,
+      "result": null,
+      "odds": { "home": 2.10, "draw": 3.20, "away": 3.70 }
+    }
+  ]
+}

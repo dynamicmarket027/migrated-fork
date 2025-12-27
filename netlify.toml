@@ -1,0 +1,97 @@
+# Netlify Configuration
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+# Environment variables (set in Netlify UI, not here)
+# FOOTBALL_DATA_API_TOKEN = "your-token-here"
+
+# Functions configuration
+[functions]
+  node_bundler = "esbuild"
+  directory = "netlify/functions"
+
+# Scheduled function: Update matches every 15 minutes
+[functions."scheduled-update"]
+  schedule = "*/15 * * * *"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.netlify.app"
+
+# Cache for static assets
+[[headers]]
+  for = "/styles/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/imagenes/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/logos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# No cache for data files (they update frequently)
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=60"
+
+# API endpoints
+[[redirects]]
+  from = "/api/login"
+  to = "/.netlify/functions/login"
+  status = 200
+
+[[redirects]]
+  from = "/api/matches"
+  to = "/.netlify/functions/matches"
+  status = 200
+
+[[redirects]]
+  from = "/api/predictions"
+  to = "/.netlify/functions/predictions"
+  status = 200
+
+[[redirects]]
+  from = "/api/standings/league"
+  to = "/.netlify/functions/standings-league"
+  status = 200
+
+[[redirects]]
+  from = "/api/standings/players"
+  to = "/.netlify/functions/standings-players"
+  status = 200
+
+[[redirects]]
+  from = "/api/history"
+  to = "/.netlify/functions/history"
+  status = 200
+
+[[redirects]]
+  from = "/api/check-bet"
+  to = "/.netlify/functions/check-bet"
+  status = 200
+
+# SPA fallback
+[[redirects]]
+  from = "/login"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,430 @@
+/* ============================================
+   APUESTAS PAGE STYLES
+   ============================================ */
+
+.apuestas-page .main-content {
+  padding-bottom: var(--spacing-xl);
+}
+
+/* Contenedor de la tabla de apuestas */
+.apuestas-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: var(--bg-white-translucent);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.apuestas-container h2 {
+  font-size: var(--font-size-xl);
+  color: var(--text-dark);
+  margin: 0 0 var(--spacing-md);
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Tabla de partidos */
+.apuestas-tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--bg-white);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.apuestas-tabla thead {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+}
+
+.apuestas-tabla thead th {
+  color: var(--text-light);
+  text-transform: uppercase;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: var(--spacing-sm);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.apuestas-tabla tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.apuestas-tabla tbody tr:nth-child(even) {
+  background-color: #f8fdf9;
+}
+
+.apuestas-tabla tbody tr:hover {
+  background-color: #e6ffe9;
+}
+
+.apuestas-tabla td {
+  padding: var(--spacing-sm);
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: var(--font-size-sm);
+  vertical-align: middle;
+}
+
+/* Celdas de equipos */
+.apuestas-tabla .team-cell {
+  padding: var(--spacing-xs);
+}
+
+.apuestas-tabla .team-cell img {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
+.apuestas-tabla .team-name {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-dark);
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+/* ============================================
+   SELECTOR DE APUESTAS (1, X, 2)
+   ============================================ */
+
+.bet-selector {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--spacing-xs);
+  flex-wrap: nowrap; /* IMPORTANTE: siempre horizontal */
+}
+
+.bet-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  min-width: 50px;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  background-color: #f5f5f5;
+}
+
+.bet-option:hover {
+  background-color: #e8f5e9;
+  border-color: var(--color-primary);
+}
+
+.bet-option input[type="radio"] {
+  display: none;
+}
+
+.bet-option .bet-value {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.bet-option .bet-quota {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Estado seleccionado */
+.bet-option.selected,
+.bet-option:has(input:checked) {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-dark);
+}
+
+.bet-option.selected .bet-value,
+.bet-option:has(input:checked) .bet-value {
+  color: var(--text-light);
+}
+
+.bet-option.selected .bet-quota,
+.bet-option:has(input:checked) .bet-quota {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Fallback para navegadores sin :has() */
+.bet-option.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-dark);
+}
+
+.bet-option.active .bet-value {
+  color: var(--text-light);
+}
+
+.bet-option.active .bet-quota {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ============================================
+   BOTÓN ENVIAR APUESTAS
+   ============================================ */
+
+.submit-container {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-lg) 0;
+}
+
+#enviar-apuestas {
+  padding: 1rem 3rem;
+  background-color: var(--color-primary);
+  color: var(--text-light);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  min-width: 200px;
+}
+
+#enviar-apuestas:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+#enviar-apuestas:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+#enviar-apuestas:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Estado de envío */
+#enviar-apuestas.sending {
+  background-color: #888;
+  pointer-events: none;
+}
+
+#enviar-apuestas.sent {
+  background-color: var(--color-primary-darker);
+}
+
+/* ============================================
+   MENSAJE DE ESTADO
+   ============================================ */
+
+.status-message {
+  text-align: center;
+  padding: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+}
+
+.status-message.error {
+  background-color: #ffebee;
+  color: var(--text-error);
+}
+
+.status-message.success {
+  background-color: #e8f5e9;
+  color: var(--color-primary-darker);
+}
+
+.status-message.warning {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .apuestas-container {
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+  }
+  
+  .apuestas-container h2 {
+    font-size: var(--font-size-lg);
+  }
+  
+  .apuestas-tabla thead th {
+    padding: var(--spacing-xs);
+    font-size: 0.7rem;
+  }
+  
+  .apuestas-tabla td {
+    padding: var(--spacing-xs);
+    font-size: 0.75rem;
+  }
+  
+  .apuestas-tabla .team-cell img {
+    height: 30px;
+    width: 30px;
+  }
+  
+  .apuestas-tabla .team-name {
+    font-size: 0.65rem;
+  }
+  
+  /* Mantener selector horizontal en móvil */
+  .bet-selector {
+    gap: 4px;
+  }
+  
+  .bet-option {
+    min-width: 40px;
+    padding: 4px;
+  }
+  
+  .bet-option .bet-value {
+    font-size: var(--font-size-sm);
+  }
+  
+  .bet-option .bet-quota {
+    font-size: 0.6rem;
+  }
+  
+  #enviar-apuestas {
+    padding: 0.75rem 2rem;
+    font-size: var(--font-size-base);
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .apuestas-tabla .team-cell img {
+    height: 24px;
+    width: 24px;
+  }
+  
+  .bet-option {
+    min-width: 35px;
+    padding: 3px;
+  }
+  
+  .bet-option .bet-value {
+    font-size: 0.8rem;
+  }
+  
+  .bet-option .bet-quota {
+    font-size: 0.55rem;
+  }
+}
+
+/* Ocultar campos ocultos */
+.hidden-data {
+  display: none !important;
+}
+
+/* ============================================
+   APUESTA ACTUAL - Resumen y estados
+   ============================================ */
+
+.resumen-apuesta {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, #f8fdf9, #e8f5e9);
+  border-radius: var(--border-radius-md);
+}
+
+.resumen-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: var(--spacing-sm);
+}
+
+.resumen-apuesta .resumen-item {
+  text-align: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  min-width: 100px;
+}
+
+.resumen-apuesta .resumen-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.resumen-apuesta .resumen-value {
+  display: block;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-primary-darker);
+}
+
+.resumen-apuesta .resumen-value.highlight {
+  color: var(--color-primary);
+  font-size: 1.8rem;
+}
+
+/* Estados de filas */
+.apuestas-tabla tbody tr.fila-acierto {
+  background-color: rgba(76, 175, 80, 0.1) !important;
+}
+
+.apuestas-tabla tbody tr.fila-fallo {
+  background-color: rgba(239, 83, 80, 0.1) !important;
+}
+
+/* Estados de iconos */
+.estado-pendiente {
+  font-size: 1.2rem;
+}
+
+.estado-acierto {
+  font-size: 1.2rem;
+  color: var(--color-primary);
+}
+
+.estado-fallo {
+  font-size: 1.2rem;
+  color: var(--text-error);
+}
+
+.pendiente {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* Responsive resumen */
+@media (max-width: 600px) {
+  .resumen-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .resumen-apuesta .resumen-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: auto;
+  }
+  
+  .resumen-apuesta .resumen-label {
+    margin-bottom: 0;
+  }
+  
+  .resumen-apuesta .resumen-value {
+    font-size: var(--font-size-lg);
+  }
+  
+  .resumen-apuesta .resumen-value.highlight {
+    font-size: var(--font-size-xl);
+  }
+}

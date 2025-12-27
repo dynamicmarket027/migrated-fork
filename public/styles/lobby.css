@@ -1,0 +1,128 @@
+/* ============================================
+   LOBBY & OPTIONS PAGES STYLES
+   ============================================ */
+
+.lobby-page {
+  min-height: 100vh;
+}
+
+.lobby-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--header-height));
+  padding: calc(var(--header-height) + var(--spacing-lg)) var(--spacing-lg) var(--spacing-lg);
+}
+
+/* Grid de botones */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 600px;
+  padding: var(--spacing-sm);
+}
+
+.lobby-button {
+  position: relative;
+  padding: 0;
+  background-color: var(--color-primary);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+}
+
+/* Overlay para mantener legibilidad del texto */
+.lobby-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.85), rgba(69, 160, 73, 0.9));
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+/* Si tiene imagen de fondo */
+.lobby-button.has-bg {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.lobby-button span {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: var(--spacing-sm);
+  text-align: center;
+}
+
+.lobby-button:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.lobby-button:hover::before {
+  background: linear-gradient(135deg, rgba(69, 160, 73, 0.9), rgba(56, 142, 60, 0.95));
+}
+
+.lobby-button:active {
+  transform: translateY(-2px);
+}
+
+/* Botón deshabilitado */
+.lobby-button:disabled,
+.lobby-button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.lobby-button:disabled:hover,
+.lobby-button.disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-md);
+}
+
+/* Variante: botón más pequeño para submenús */
+.button-grid--small .lobby-button {
+  min-height: 100px;
+  font-size: var(--font-size-base);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .button-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    max-width: 400px;
+  }
+  
+  .lobby-button {
+    min-height: 100px;
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (min-width: 768px) {
+  .button-grid {
+    gap: var(--spacing-lg);
+  }
+  
+  .lobby-button {
+    min-height: 140px;
+  }
+}

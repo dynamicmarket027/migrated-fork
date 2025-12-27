@@ -1,0 +1,24 @@
+{
+  "name": "quiniela-laliga",
+  "version": "2.0.0",
+  "description": "Quiniela La Liga - Sistema de apuestas migrado a Netlify",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step needed'",
+    "export-sheets": "node scripts/export-sheets.js",
+    "hash-passwords": "node scripts/hash-passwords.js",
+    "validate": "node scripts/validate-migration.js",
+    "update-matches": "node scripts/manual-update-matches.js"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.0.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

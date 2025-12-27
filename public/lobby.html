@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quiniela - Panel principal">
+  <title>Quiniela - Lobby</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/lobby.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="imagenes/logo.png">
+</head>
+<body class="lobby-page">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="lobby.html">
+        <img src="imagenes/logo.png" onerror="this.onerror=null; this.src='imagenes/logo.svg';" alt="Logo Quiniela">
+      </a>
+      <h1>Bienvenido, <span id="nombre-usuario"></span></h1>
+    </div>
+    <div class="header-right">
+      <button class="header-button" onclick="window.location.href='perfil.html'">
+        Perfil
+      </button>
+      <button id="cerrar-sesion" class="header-button">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="lobby-content">
+    <nav class="button-grid" aria-label="Menú principal">
+      <a href="options_apuestas.html" class="lobby-button has-bg" style="background-image: url('imagenes/btn-apuestas.jpg');">
+        <span>Mis Apuestas</span>
+      </a>
+      
+      <a href="options_clasificacion.html" class="lobby-button has-bg" style="background-image: url('imagenes/btn-clasificacion.jpg');">
+        <span>Clasificación</span>
+      </a>
+      
+      <a href="#" class="lobby-button has-bg disabled" style="background-image: url('imagenes/btn-canjear.jpg');" onclick="event.preventDefault(); alert('Próximamente disponible');">
+        <span>Canjear Puntos</span>
+      </a>
+      
+      <a href="#" class="lobby-button has-bg disabled" style="background-image: url('imagenes/btn-casino.jpg');" onclick="event.preventDefault(); alert('Próximamente disponible');">
+        <span>Casino</span>
+      </a>
+    </nav>
+  </main>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>
