@@ -12,6 +12,7 @@
 [functions]
   node_bundler = "esbuild"
   directory = "netlify/functions"
+  included_files = ["public/data/**"]
 
 # Scheduled function: Update matches every 15 minutes
 [functions."scheduled-update"]
