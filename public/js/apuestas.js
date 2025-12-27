@@ -25,6 +25,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
+ * Verifica si el usuario ya apostó en esta jornada
+ */
+async function checkIfAlreadyBet(jornada) {
+  const usuario = getCurrentUser();
+  if (!usuario || !jornada) return false;
+  
+  try {
+    const response = await fetch(`${API_URLS.verificarApuesta}?jugador=${encodeURIComponent(usuario)}&jornada=${encodeURIComponent(jornada)}`);
+    const data = await response.json();
+    return data.hasBet === true;
+  } catch (error) {
+    console.error('Error verificando apuesta:', error);
+    return false;
+  }
+}
+
+/**
  * Carga los partidos de la jornada actual
  */
 async function loadMatches() {
@@ -45,10 +62,26 @@ async function loadMatches() {
     BettingState.matches = data;
     
     // Guardar jornada actual
+    let jornadaNum = '17';
     if (data[0] && data[0].Jornada) {
-      const jornadaNum = data[0].Jornada.replace('Regular season - ', '');
+      jornadaNum = data[0].Jornada.replace('Regular season - ', '');
       BettingState.currentJornada = jornadaNum;
       numJornada.textContent = `JORNADA ${jornadaNum}`;
+    }
+    
+    // VERIFICAR SI YA APOSTÓ
+    const yaAposto = await checkIfAlreadyBet(jornadaNum);
+    if (yaAposto) {
+      BettingState.hasSubmitted = true;
+      loadingContainer.innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <p style="color: var(--color-primary); font-size: 1.2rem; margin-bottom: 1rem;">
+            ✓ Ya has enviado tu apuesta para la Jornada ${jornadaNum}
+          </p>
+          <a href="lobby.html" class="btn">Volver al menú</a>
+        </div>
+      `;
+      return;
     }
     
     // Renderizar partidos
@@ -282,8 +315,9 @@ async function handleSubmit() {
     // Verificar si ya había enviado
     if (result.alreadySubmitted) {
       BettingState.isSubmitting = false;
-      enviarBtn.disabled = false;
-      enviarBtn.textContent = 'Enviar Apuestas';
+      BettingState.hasSubmitted = true;
+      enviarBtn.disabled = true;
+      enviarBtn.textContent = 'Apuesta ya enviada';
       enviarBtn.classList.remove('sending');
       showStatus('Ya has enviado tu apuesta para esta jornada.', 'warning');
       return;
