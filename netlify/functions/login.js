@@ -1,14 +1,9 @@
 /**
  * Netlify Function: Login
- * Autenticación de usuarios con bcrypt
  */
 
 import bcrypt from 'bcryptjs';
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
 
-// Headers CORS
 const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -16,8 +11,8 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-// Usuarios embebidos como fallback (en caso de que no se pueda leer el archivo)
-const FALLBACK_USERS = [
+// Usuarios directamente en el código (más fiable en Netlify Functions)
+const USERS = [
   { "username": "p", "password": "soe" },
   { "username": "prueba0", "password": "prueba" },
   { "username": "Elmiguel", "password": "1149" },
@@ -45,34 +40,7 @@ const FALLBACK_USERS = [
   { "username": "BailaVini", "password": "yoquese123" }
 ];
 
-// Cargar usuarios
-function loadUsers() {
-  const possiblePaths = [
-    join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'data', 'users.json'),
-    join(process.cwd(), 'public', 'data', 'users.json'),
-    join(process.cwd(), 'data', 'users.json'),
-  ];
-
-  for (const usersPath of possiblePaths) {
-    try {
-      if (existsSync(usersPath)) {
-        console.log('[login] Loading users from:', usersPath);
-        const data = readFileSync(usersPath, 'utf-8');
-        const parsed = JSON.parse(data);
-        if (parsed.users && parsed.users.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (error) {
-      console.log('[login] Could not load from:', usersPath, error.message);
-    }
-  }
-
-  console.log('[login] Using fallback embedded users');
-  return { users: FALLBACK_USERS };
-}
-
-export async function handler(event, context) {
+export async function handler(event) {
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers, body: '' };
   }
@@ -97,9 +65,7 @@ export async function handler(event, context) {
       };
     }
 
-    const usersData = loadUsers();
-    
-    const user = usersData.users.find(
+    const user = USERS.find(
       u => u.username.toLowerCase() === usuario.toLowerCase()
     );
 
@@ -138,7 +104,7 @@ export async function handler(event, context) {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ success: false, error: 'Server error', details: error.message })
+      body: JSON.stringify({ success: false, error: error.message })
     };
   }
 }

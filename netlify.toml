@@ -14,6 +14,9 @@
   directory = "netlify/functions"
   included_files = ["public/data/**"]
 
+[functions."*"]
+  external_node_modules = ["bcryptjs"]
+
 # Scheduled function: Update matches every 15 minutes
 [functions."scheduled-update"]
   schedule = "*/15 * * * *"
