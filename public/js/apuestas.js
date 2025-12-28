@@ -3,8 +3,8 @@
  * APUESTAS.JS - VERSIÓN CORREGIDA
  * ============================================
  * Correcciones:
- * 1. Manejo correcto de fechas/horas como strings
- * 2. Rutas de logos corregidas
+ * 1. Rutas de logos corregidas (sin 'public/')
+ * 2. Manejo correcto de fechas/horas como strings
  */
 
 const BettingState = {
@@ -42,21 +42,30 @@ async function checkIfAlreadyBet(jornada) {
 /**
  * Formatea la fecha - acepta varios formatos
  * @param {string} fecha - Puede ser "5/12/2025", "2025-12-05", ISO string, etc.
- * @returns {string} - Fecha formateada en español
+ * @returns {string} - Fecha formateada en español (D/M/YYYY)
  */
 function formatearFecha(fecha) {
-  if (!fecha) return '-';
+  if (!fecha || fecha === 'Invalid Date') return '-';
   
   // Si ya viene en formato día/mes/año, devolverlo tal cual
   if (typeof fecha === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)) {
     return fecha;
   }
   
+  // Si viene en formato YYYY-MM-DD
+  if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    const parts = fecha.split('-');
+    return `${parseInt(parts[2], 10)}/${parseInt(parts[1], 10)}/${parts[0]}`;
+  }
+  
   // Intentar parsear como fecha ISO o similar
   try {
     const date = new Date(fecha);
     if (!isNaN(date.getTime())) {
-      return date.toLocaleDateString('es-ES');
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     }
   } catch (e) {
     // Ignorar error
@@ -72,7 +81,7 @@ function formatearFecha(fecha) {
  * @returns {string} - Hora formateada HH:MM
  */
 function formatearHora(hora) {
-  if (!hora) return '-';
+  if (!hora || hora === 'Invalid Date') return '-';
   
   // Si ya viene en formato HH:MM o HH:MM:SS, extraer HH:MM
   if (typeof hora === 'string') {
@@ -86,10 +95,9 @@ function formatearHora(hora) {
   try {
     const date = new Date(hora);
     if (!isNaN(date.getTime())) {
-      return date.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
     }
   } catch (e) {
     // Ignorar error
@@ -100,71 +108,15 @@ function formatearHora(hora) {
 }
 
 /**
- * Mapeo de IDs de equipo a nombres de archivo de logo
- * Basado en la imagen de logos compartida
- */
-const LOGO_MAP = {
-  // Athletic Club
-  77: '77',
-  // Atlético de Madrid  
-  78: '78',
-  // CA Osasuna
-  79: '79',
-  // RCD Espanyol
-  80: '80',
-  // FC Barcelona
-  81: '81',
-  // Getafe CF
-  82: '82',
-  // Real Madrid
-  86: '86',
-  // Rayo Vallecano
-  87: '87',
-  // Levante UD
-  88: '88',
-  // RCD Mallorca
-  89: '89',
-  // Real Betis
-  90: '90',
-  // Real Sociedad
-  92: '92',
-  // Villarreal CF
-  94: '94',
-  // Valencia CF
-  95: '95',
-  // Real Valladolid
-  250: '250',
-  // Deportivo Alavés
-  263: '263',
-  // RC Celta
-  264: '558', // Celta usa 558.png según la imagen
-  // UD Las Palmas
-  275: '275',
-  // Real Oviedo (o podría ser Leganés)
-  280: '280', 
-  // Elche CF
-  285: '285',
-  // Girona FC
-  298: '298',
-  // Sevilla FC
-  559: '559',
-  // CD Leganés
-  745: '745',
-  // Celta de Vigo (alternativo)
-  558: '558',
-  // Otros equipos que puedan aparecer
-  1048: '1048'
-};
-
-/**
  * Obtiene la ruta del logo para un equipo
+ * CORREGIDO: Sin 'public/' al principio
  * @param {number|string} teamId - ID del equipo
  * @returns {string} - Ruta al archivo de logo
  */
 function getLogoPath(teamId) {
   const id = parseInt(teamId, 10);
-  const logoFile = LOGO_MAP[id] || id;
-  return `public/logos/${logoFile}.png`;
+  // Ruta correcta desde la carpeta public (donde está el HTML)
+  return `logos/${id}.png`;
 }
 
 async function loadMatches() {
@@ -256,6 +208,12 @@ function createMatchRow(partido, index) {
   const tdLocal = document.createElement('td');
   tdLocal.className = 'team-cell';
   
+  const localWrapper = document.createElement('div');
+  localWrapper.style.display = 'flex';
+  localWrapper.style.flexDirection = 'column';
+  localWrapper.style.alignItems = 'center';
+  localWrapper.style.gap = '4px';
+  
   const imgLocal = document.createElement('img');
   imgLocal.src = getLogoPath(partido.ID_Local);
   imgLocal.alt = partido.Equipo_Local;
@@ -271,13 +229,20 @@ function createMatchRow(partido, index) {
   spanLocal.className = 'team-name';
   spanLocal.textContent = partido.Equipo_Local;
   
-  tdLocal.appendChild(imgLocal);
-  tdLocal.appendChild(spanLocal);
+  localWrapper.appendChild(imgLocal);
+  localWrapper.appendChild(spanLocal);
+  tdLocal.appendChild(localWrapper);
   tr.appendChild(tdLocal);
   
   // VISITANTE - Con logo
   const tdVisitante = document.createElement('td');
   tdVisitante.className = 'team-cell';
+  
+  const visitanteWrapper = document.createElement('div');
+  visitanteWrapper.style.display = 'flex';
+  visitanteWrapper.style.flexDirection = 'column';
+  visitanteWrapper.style.alignItems = 'center';
+  visitanteWrapper.style.gap = '4px';
   
   const imgVisitante = document.createElement('img');
   imgVisitante.src = getLogoPath(partido.ID_Visitante);
@@ -294,8 +259,9 @@ function createMatchRow(partido, index) {
   spanVisitante.className = 'team-name';
   spanVisitante.textContent = partido.Equipo_Visitante;
   
-  tdVisitante.appendChild(imgVisitante);
-  tdVisitante.appendChild(spanVisitante);
+  visitanteWrapper.appendChild(imgVisitante);
+  visitanteWrapper.appendChild(spanVisitante);
+  tdVisitante.appendChild(visitanteWrapper);
   tr.appendChild(tdVisitante);
   
   // APUESTA - Selector 1/X/2
