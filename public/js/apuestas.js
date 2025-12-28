@@ -114,9 +114,11 @@ function formatearHora(hora) {
  * @returns {string} - Ruta al archivo de logo
  */
 function getLogoPath(teamId) {
-  const id = parseInt(teamId, 10);
+  // const id = parseInt(teamId, 10);
+  const id = teamId;
   // Ruta actualizada: logos ahora en carpeta imagenes
   return `/imagenes/${id}.png`;
+
 }
 
 async function loadMatches() {
