@@ -1,7 +1,10 @@
 /**
  * ============================================
- * APUESTAS.JS
+ * APUESTAS.JS - VERSIÓN CORREGIDA
  * ============================================
+ * Correcciones:
+ * 1. Manejo correcto de fechas/horas como strings
+ * 2. Rutas de logos corregidas
  */
 
 const BettingState = {
@@ -36,6 +39,134 @@ async function checkIfAlreadyBet(jornada) {
   }
 }
 
+/**
+ * Formatea la fecha - acepta varios formatos
+ * @param {string} fecha - Puede ser "5/12/2025", "2025-12-05", ISO string, etc.
+ * @returns {string} - Fecha formateada en español
+ */
+function formatearFecha(fecha) {
+  if (!fecha) return '-';
+  
+  // Si ya viene en formato día/mes/año, devolverlo tal cual
+  if (typeof fecha === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)) {
+    return fecha;
+  }
+  
+  // Intentar parsear como fecha ISO o similar
+  try {
+    const date = new Date(fecha);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString('es-ES');
+    }
+  } catch (e) {
+    // Ignorar error
+  }
+  
+  // Devolver el valor original si no se puede parsear
+  return fecha;
+}
+
+/**
+ * Formatea la hora - acepta varios formatos
+ * @param {string} hora - Puede ser "21:00", "21:00:00", ISO string, etc.
+ * @returns {string} - Hora formateada HH:MM
+ */
+function formatearHora(hora) {
+  if (!hora) return '-';
+  
+  // Si ya viene en formato HH:MM o HH:MM:SS, extraer HH:MM
+  if (typeof hora === 'string') {
+    const match = hora.match(/(\d{1,2}):(\d{2})/);
+    if (match) {
+      return `${match[1].padStart(2, '0')}:${match[2]}`;
+    }
+  }
+  
+  // Intentar parsear como fecha/hora ISO
+  try {
+    const date = new Date(hora);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  } catch (e) {
+    // Ignorar error
+  }
+  
+  // Devolver el valor original si no se puede parsear
+  return hora;
+}
+
+/**
+ * Mapeo de IDs de equipo a nombres de archivo de logo
+ * Basado en la imagen de logos compartida
+ */
+const LOGO_MAP = {
+  // Athletic Club
+  77: '77',
+  // Atlético de Madrid  
+  78: '78',
+  // CA Osasuna
+  79: '79',
+  // RCD Espanyol
+  80: '80',
+  // FC Barcelona
+  81: '81',
+  // Getafe CF
+  82: '82',
+  // Real Madrid
+  86: '86',
+  // Rayo Vallecano
+  87: '87',
+  // Levante UD
+  88: '88',
+  // RCD Mallorca
+  89: '89',
+  // Real Betis
+  90: '90',
+  // Real Sociedad
+  92: '92',
+  // Villarreal CF
+  94: '94',
+  // Valencia CF
+  95: '95',
+  // Real Valladolid
+  250: '250',
+  // Deportivo Alavés
+  263: '263',
+  // RC Celta
+  264: '558', // Celta usa 558.png según la imagen
+  // UD Las Palmas
+  275: '275',
+  // Real Oviedo (o podría ser Leganés)
+  280: '280', 
+  // Elche CF
+  285: '285',
+  // Girona FC
+  298: '298',
+  // Sevilla FC
+  559: '559',
+  // CD Leganés
+  745: '745',
+  // Celta de Vigo (alternativo)
+  558: '558',
+  // Otros equipos que puedan aparecer
+  1048: '1048'
+};
+
+/**
+ * Obtiene la ruta del logo para un equipo
+ * @param {number|string} teamId - ID del equipo
+ * @returns {string} - Ruta al archivo de logo
+ */
+function getLogoPath(teamId) {
+  const id = parseInt(teamId, 10);
+  const logoFile = LOGO_MAP[id] || id;
+  return `logos/${logoFile}.png`;
+}
+
 async function loadMatches() {
   const tablaApuestas = document.getElementById('tabla-apuestas');
   const loadingContainer = document.getElementById('loading-container');
@@ -52,6 +183,9 @@ async function loadMatches() {
     }
     
     BettingState.matches = data;
+    
+    // Debug: ver estructura de datos
+    console.log('Datos recibidos:', data[0]);
     
     let jornadaNum = '17';
     if (data[0] && data[0].Jornada) {
@@ -108,48 +242,69 @@ async function loadMatches() {
 function createMatchRow(partido, index) {
   const tr = document.createElement('tr');
   
+  // FECHA - Usar función de formateo
   const tdFecha = document.createElement('td');
-  tdFecha.textContent = new Date(partido.Fecha).toLocaleDateString('es-ES');
+  tdFecha.textContent = formatearFecha(partido.Fecha);
   tr.appendChild(tdFecha);
   
+  // HORA - Usar función de formateo  
   const tdHora = document.createElement('td');
-  tdHora.textContent = new Date(partido.Hora).toLocaleTimeString('es-ES', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  tdHora.textContent = formatearHora(partido.Hora);
   tr.appendChild(tdHora);
   
+  // LOCAL - Con logo
   const tdLocal = document.createElement('td');
   tdLocal.className = 'team-cell';
+  
   const imgLocal = document.createElement('img');
-  imgLocal.src = `logos/${partido.ID_Local}.png`;
+  imgLocal.src = getLogoPath(partido.ID_Local);
   imgLocal.alt = partido.Equipo_Local;
-  imgLocal.onerror = function() { this.style.display = 'none'; };
+  imgLocal.style.height = '40px';
+  imgLocal.style.width = '40px';
+  imgLocal.style.objectFit = 'contain';
+  imgLocal.onerror = function() { 
+    this.style.display = 'none'; 
+    console.log(`Logo no encontrado: ${this.src}`);
+  };
+  
   const spanLocal = document.createElement('span');
   spanLocal.className = 'team-name';
   spanLocal.textContent = partido.Equipo_Local;
+  
   tdLocal.appendChild(imgLocal);
   tdLocal.appendChild(spanLocal);
   tr.appendChild(tdLocal);
   
+  // VISITANTE - Con logo
   const tdVisitante = document.createElement('td');
   tdVisitante.className = 'team-cell';
+  
   const imgVisitante = document.createElement('img');
-  imgVisitante.src = `logos/${partido.ID_Visitante}.png`;
+  imgVisitante.src = getLogoPath(partido.ID_Visitante);
   imgVisitante.alt = partido.Equipo_Visitante;
-  imgVisitante.onerror = function() { this.style.display = 'none'; };
+  imgVisitante.style.height = '40px';
+  imgVisitante.style.width = '40px';
+  imgVisitante.style.objectFit = 'contain';
+  imgVisitante.onerror = function() { 
+    this.style.display = 'none';
+    console.log(`Logo no encontrado: ${this.src}`);
+  };
+  
   const spanVisitante = document.createElement('span');
   spanVisitante.className = 'team-name';
   spanVisitante.textContent = partido.Equipo_Visitante;
+  
   tdVisitante.appendChild(imgVisitante);
   tdVisitante.appendChild(spanVisitante);
   tr.appendChild(tdVisitante);
   
+  // APUESTA - Selector 1/X/2
   const tdApuesta = document.createElement('td');
   const betSelector = createBetSelector(partido, index);
   tdApuesta.appendChild(betSelector);
   tr.appendChild(tdApuesta);
   
+  // Data attributes para envío
   tr.dataset.idLocal = partido.ID_Local;
   tr.dataset.idVisitante = partido.ID_Visitante;
   tr.dataset.idPartido = partido.ID_partido;
