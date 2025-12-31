@@ -1,5 +1,6 @@
 /* ============================================
-   HISTORIAL PAGE STYLES
+   HISTORIAL PAGE STYLES - MOBILE OPTIMIZED
+   Con escudos de equipos
    ============================================ */
 
 .historial-page .main-content {
@@ -77,13 +78,17 @@
 .resumen-item {
   text-align: center;
   padding: var(--spacing-xs) var(--spacing-sm);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--border-radius-sm);
+  min-width: 100px;
 }
 
 .resumen-item .label {
   display: block;
-  font-size: var(--font-size-sm);
+  font-size: 0.7rem;
   color: var(--text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
 }
 
 .resumen-item .value {
@@ -137,6 +142,34 @@
   vertical-align: middle;
 }
 
+/* ============================================
+   CELDAS DE EQUIPOS CON ESCUDO
+   ============================================ */
+
+.tabla-jornada .team-cell {
+  padding: var(--spacing-xs);
+}
+
+.team-with-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.team-with-logo .team-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.team-with-logo .team-name {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: center;
+  word-break: break-word;
+}
+
 /* Iconos de acierto */
 .tabla-jornada .acierto-icon {
   font-size: 1.2rem;
@@ -174,29 +207,34 @@
 }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE - MOBILE
    ============================================ */
 
 @media (max-width: 768px) {
+  .historial-container {
+    padding: 0 var(--spacing-xs);
+  }
+  
   .jornada-header {
     font-size: var(--font-size-base);
     padding: var(--spacing-sm);
   }
   
   .jornada-resumen.show {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: var(--spacing-xs);
     padding: var(--spacing-sm);
   }
   
   .resumen-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
+    flex: 1;
+    min-width: 80px;
+    padding: var(--spacing-xs);
   }
   
   .resumen-item .label {
-    margin-bottom: 0;
+    font-size: 0.6rem;
   }
   
   .resumen-item .value {
@@ -213,18 +251,45 @@
   .tabla-jornada .hide-mobile {
     display: none;
   }
+  
+  .team-with-logo .team-logo {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .team-with-logo .team-name {
+    font-size: 0.65rem;
+  }
 }
 
 @media (max-width: 480px) {
   .tabla-jornada thead th,
   .tabla-jornada td {
-    padding: 4px;
+    padding: 4px 2px;
     font-size: 0.65rem;
   }
   
   .pronostico-badge {
     padding: 2px 8px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+  }
+  
+  .team-with-logo .team-logo {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .team-with-logo .team-name {
+    font-size: 0.55rem;
+    max-width: 55px;
+  }
+  
+  .resumen-item {
+    min-width: 70px;
+  }
+  
+  .resumen-item .value {
+    font-size: var(--font-size-base);
   }
 }
 

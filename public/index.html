@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="Quiniela - Inicia sesión para hacer tus apuestas">
   <title>Quiniela - Login</title>
   
@@ -17,10 +17,17 @@
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="imagenes/logo.png">
+  
+  <!-- Prevent zoom on input focus (iOS) -->
+  <style>
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  </style>
 </head>
 <body class="login-page">
   <div class="login-wrapper">
-    <img src="imagenes/logo.png" onerror="this.onerror=null; this.src='imagenes/logo.svg';" alt="Logo Quiniela" class="login-logo" onerror="this.onerror=null; this.src='imagenes/logo.svg';">
+    <img src="imagenes/logo.png" onerror="this.onerror=null; this.src='imagenes/logo.svg';" alt="Logo Quiniela" class="login-logo">
     
     <div class="login-container">
       <h2 class="login-title">Bienvenido</h2>

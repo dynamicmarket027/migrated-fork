@@ -1,5 +1,5 @@
 /* ============================================
-   APUESTAS PAGE STYLES
+   APUESTAS PAGE STYLES - MOBILE OPTIMIZED
    ============================================ */
 
 .apuestas-page .main-content {
@@ -72,24 +72,58 @@
   vertical-align: middle;
 }
 
-/* Celdas de equipos */
+/* Celdas de equipos - Layout vertical con logo arriba */
 .apuestas-tabla .team-cell {
   padding: var(--spacing-xs);
 }
 
-.apuestas-tabla .team-cell img {
-  height: 40px;
-  width: 40px;
-  object-fit: contain;
-  margin-bottom: 4px;
+.team-wrapper-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-.apuestas-tabla .team-name {
+.apuestas-tabla .team-cell img,
+.team-wrapper-vertical .team-logo {
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+}
+
+.apuestas-tabla .team-name,
+.team-wrapper-vertical .team-name {
   display: block;
   font-size: 0.75rem;
   color: var(--text-dark);
-  margin-top: 4px;
   line-height: 1.2;
+  text-align: center;
+  word-break: break-word;
+}
+
+/* ============================================
+   CELDA FECHA/HORA COMBINADA
+   ============================================ */
+
+.datetime-cell {
+  white-space: nowrap;
+}
+
+.datetime-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.datetime-date {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.datetime-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
 }
 
 /* ============================================
@@ -101,7 +135,7 @@
   justify-content: center;
   align-items: stretch;
   gap: var(--spacing-xs);
-  flex-wrap: nowrap; /* IMPORTANTE: siempre horizontal */
+  flex-wrap: nowrap;
 }
 
 .bet-option {
@@ -209,7 +243,6 @@
   transform: none;
 }
 
-/* Estado de envío */
 #enviar-apuestas.sending {
   background-color: #888;
   pointer-events: none;
@@ -247,90 +280,7 @@
 }
 
 /* ============================================
-   RESPONSIVE
-   ============================================ */
-
-@media (max-width: 768px) {
-  .apuestas-container {
-    padding: var(--spacing-sm);
-    border-radius: var(--border-radius-md);
-  }
-  
-  .apuestas-container h2 {
-    font-size: var(--font-size-lg);
-  }
-  
-  .apuestas-tabla thead th {
-    padding: var(--spacing-xs);
-    font-size: 0.7rem;
-  }
-  
-  .apuestas-tabla td {
-    padding: var(--spacing-xs);
-    font-size: 0.75rem;
-  }
-  
-  .apuestas-tabla .team-cell img {
-    height: 30px;
-    width: 30px;
-  }
-  
-  .apuestas-tabla .team-name {
-    font-size: 0.65rem;
-  }
-  
-  /* Mantener selector horizontal en móvil */
-  .bet-selector {
-    gap: 4px;
-  }
-  
-  .bet-option {
-    min-width: 40px;
-    padding: 4px;
-  }
-  
-  .bet-option .bet-value {
-    font-size: var(--font-size-sm);
-  }
-  
-  .bet-option .bet-quota {
-    font-size: 0.6rem;
-  }
-  
-  #enviar-apuestas {
-    padding: 0.75rem 2rem;
-    font-size: var(--font-size-base);
-    min-width: 150px;
-  }
-}
-
-@media (max-width: 480px) {
-  .apuestas-tabla .team-cell img {
-    height: 24px;
-    width: 24px;
-  }
-  
-  .bet-option {
-    min-width: 35px;
-    padding: 3px;
-  }
-  
-  .bet-option .bet-value {
-    font-size: 0.8rem;
-  }
-  
-  .bet-option .bet-quota {
-    font-size: 0.55rem;
-  }
-}
-
-/* Ocultar campos ocultos */
-.hidden-data {
-  display: none !important;
-}
-
-/* ============================================
-   APUESTA ACTUAL - Resumen y estados
+   APUESTA ACTUAL - RESUMEN MOBILE-FIRST
    ============================================ */
 
 .resumen-apuesta {
@@ -341,35 +291,37 @@
 }
 
 .resumen-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-sm);
 }
 
 .resumen-apuesta .resumen-item {
   text-align: center;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  min-width: 100px;
+  padding: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--border-radius-sm);
 }
 
 .resumen-apuesta .resumen-label {
   display: block;
-  font-size: var(--font-size-sm);
+  font-size: 0.7rem;
   color: var(--text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .resumen-apuesta .resumen-value {
   display: block;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--color-primary-darker);
 }
 
 .resumen-apuesta .resumen-value.highlight {
   color: var(--color-primary);
-  font-size: 1.8rem;
+  font-size: var(--font-size-xl);
 }
 
 /* Estados de filas */
@@ -402,29 +354,281 @@
   font-size: 0.85rem;
 }
 
-/* Responsive resumen */
-@media (max-width: 600px) {
-  .resumen-grid {
-    flex-direction: column;
-    align-items: center;
+/* Pronóstico badge */
+.pronostico-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--color-primary);
+  color: var(--text-light);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Cuota y resultado values */
+.cuota-value {
+  font-weight: 600;
+  color: var(--color-primary-darker);
+}
+
+.resultado-value {
+  font-weight: 600;
+}
+
+/* ============================================
+   RESPONSIVE - REALIZAR APUESTA
+   ============================================ */
+
+@media (max-width: 768px) {
+  .apuestas-container {
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
   }
   
-  .resumen-apuesta .resumen-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    min-width: auto;
-  }
-  
-  .resumen-apuesta .resumen-label {
-    margin-bottom: 0;
-  }
-  
-  .resumen-apuesta .resumen-value {
+  .apuestas-container h2 {
     font-size: var(--font-size-lg);
   }
   
-  .resumen-apuesta .resumen-value.highlight {
-    font-size: var(--font-size-xl);
+  .apuestas-tabla thead th {
+    padding: var(--spacing-xs);
+    font-size: 0.65rem;
   }
+  
+  .apuestas-tabla td {
+    padding: var(--spacing-xs);
+    font-size: 0.75rem;
+  }
+  
+  .apuestas-tabla .team-cell img,
+  .team-wrapper-vertical .team-logo {
+    height: 28px;
+    width: 28px;
+  }
+  
+  .team-wrapper-vertical .team-name,
+  .apuestas-tabla .team-name {
+    font-size: 0.65rem;
+  }
+  
+  .bet-selector {
+    gap: 3px;
+  }
+  
+  .bet-option {
+    min-width: 38px;
+    padding: 4px;
+  }
+  
+  .bet-option .bet-value {
+    font-size: 0.85rem;
+  }
+  
+  .bet-option .bet-quota {
+    font-size: 0.6rem;
+  }
+  
+  #enviar-apuestas {
+    padding: 0.75rem 2rem;
+    font-size: var(--font-size-base);
+    min-width: 150px;
+  }
+  
+  /* Fecha/hora compacta */
+  .datetime-date {
+    font-size: 0.7rem;
+  }
+  
+  .datetime-time {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .apuestas-container {
+    padding: var(--spacing-xs);
+    margin: 0 -0.25rem;
+    border-radius: var(--border-radius-sm);
+  }
+  
+  .apuestas-tabla thead th {
+    padding: 6px 2px;
+    font-size: 0.55rem;
+  }
+  
+  .apuestas-tabla td {
+    padding: 6px 2px;
+    font-size: 0.65rem;
+  }
+  
+  .apuestas-tabla .team-cell img,
+  .team-wrapper-vertical .team-logo {
+    height: 22px;
+    width: 22px;
+  }
+  
+  .team-wrapper-vertical .team-name,
+  .apuestas-tabla .team-name {
+    font-size: 0.55rem;
+    max-width: 60px;
+  }
+  
+  .bet-option {
+    min-width: 32px;
+    padding: 3px;
+  }
+  
+  .bet-option .bet-value {
+    font-size: 0.75rem;
+  }
+  
+  .bet-option .bet-quota {
+    font-size: 0.5rem;
+  }
+  
+  /* Resumen compacto */
+  .resumen-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+  }
+  
+  .resumen-apuesta {
+    padding: var(--spacing-sm);
+  }
+  
+  .resumen-apuesta .resumen-label {
+    font-size: 0.6rem;
+  }
+  
+  .resumen-apuesta .resumen-value {
+    font-size: var(--font-size-base);
+  }
+  
+  .resumen-apuesta .resumen-value.highlight {
+    font-size: var(--font-size-lg);
+  }
+  
+  /* Pronostico badge más pequeño */
+  .pronostico-badge {
+    padding: 2px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+/* ============================================
+   APUESTA ACTUAL - TABLA MÓVIL CARDS
+   ============================================ */
+
+@media (max-width: 600px) {
+  /* Convertir tabla a cards en apuesta actual */
+  #tablaApuestaActual {
+    display: block;
+  }
+  
+  #tablaApuestaActual thead {
+    display: none;
+  }
+  
+  #tablaApuestaActual tbody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  #tablaApuestaActual tbody tr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 4px;
+    padding: var(--spacing-sm);
+    background: var(--bg-white);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--color-primary);
+  }
+  
+  #tablaApuestaActual tbody tr.fila-acierto {
+    border-left-color: var(--color-primary);
+    background: rgba(76, 175, 80, 0.05);
+  }
+  
+  #tablaApuestaActual tbody tr.fila-fallo {
+    border-left-color: var(--text-error);
+    background: rgba(239, 83, 80, 0.05);
+  }
+  
+  #tablaApuestaActual tbody td {
+    border: none;
+    padding: 4px;
+  }
+  
+  /* Local - primera columna, primera fila */
+  #tablaApuestaActual tbody td:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  
+  /* Visitante - segunda columna, primera fila */
+  #tablaApuestaActual tbody td:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  
+  /* Pronóstico - primera columna, segunda fila */
+  #tablaApuestaActual tbody td:nth-child(3) {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  #tablaApuestaActual tbody td:nth-child(3)::before {
+    content: "Pronóstico: ";
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+  
+  /* Cuota - segunda columna, segunda fila */
+  #tablaApuestaActual tbody td:nth-child(4) {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  #tablaApuestaActual tbody td:nth-child(4)::before {
+    content: "Cuota: ";
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+  
+  /* Resultado - primera columna, tercera fila */
+  #tablaApuestaActual tbody td:nth-child(5) {
+    grid-column: 1;
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  #tablaApuestaActual tbody td:nth-child(5)::before {
+    content: "Resultado: ";
+    font-size: 0.6rem;
+    color: var(--text-muted);
+  }
+  
+  /* Acierto - segunda columna, tercera fila */
+  #tablaApuestaActual tbody td:nth-child(6) {
+    grid-column: 2;
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
+
+/* Ocultar campos ocultos */
+.hidden-data {
+  display: none !important;
 }

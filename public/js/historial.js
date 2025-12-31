@@ -1,8 +1,8 @@
 /**
  * ============================================
- * HISTORIAL.JS
+ * HISTORIAL.JS - CON ESCUDOS DE EQUIPOS
  * ============================================
- * Carga y muestra el historial de apuestas del usuario
+ * Actualizado para mostrar logos de equipos
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,6 +13,86 @@ document.addEventListener('DOMContentLoaded', () => {
   
   loadHistorial();
 });
+
+/**
+ * Obtiene la ruta del logo para un equipo
+ */
+function getLogoPath(teamId) {
+  if (!teamId) return null;
+  const id = parseInt(teamId, 10);
+  if (isNaN(id)) return null;
+  return `/imagenes/${id}.png`;
+}
+
+/**
+ * Mapa de nombres de equipos a IDs
+ * Necesario porque el historial no tiene IDs
+ */
+const TEAM_IDS = {
+  'FC Barcelona': 81,
+  'Barcelona': 81,
+  'Real Madrid CF': 86,
+  'Real Madrid': 86,
+  'Atlético de Madrid': 78,
+  'Atletico Madrid': 78,
+  'Athletic Club': 77,
+  'Athletic Bilbao': 77,
+  'Real Sociedad': 92,
+  'Real Betis': 90,
+  'Betis': 90,
+  'Villarreal CF': 94,
+  'Villarreal': 94,
+  'Sevilla FC': 559,
+  'Sevilla': 559,
+  'Valencia CF': 95,
+  'Valencia': 95,
+  'Getafe CF': 82,
+  'Getafe': 82,
+  'CA Osasuna': 79,
+  'Osasuna': 79,
+  'RC Celta de Vigo': 558,
+  'Celta Vigo': 558,
+  'Celta': 558,
+  'RCD Mallorca': 89,
+  'Mallorca': 89,
+  'Rayo Vallecano': 87,
+  'Rayo': 87,
+  'UD Las Palmas': 275,
+  'Las Palmas': 275,
+  'Deportivo Alavés': 263,
+  'Alaves': 263,
+  'RCD Espanyol': 80,
+  'Espanyol': 80,
+  'Real Valladolid CF': 250,
+  'Valladolid': 250,
+  'CD Leganés': 745,
+  'Leganes': 745,
+  'Girona FC': 298,
+  'Girona': 298
+};
+
+/**
+ * Obtiene el ID de un equipo por su nombre
+ */
+function getTeamIdByName(teamName) {
+  if (!teamName) return null;
+  
+  // Buscar coincidencia exacta
+  if (TEAM_IDS[teamName]) {
+    return TEAM_IDS[teamName];
+  }
+  
+  // Buscar coincidencia parcial
+  const normalizedName = teamName.toLowerCase().trim();
+  for (const [name, id] of Object.entries(TEAM_IDS)) {
+    if (name.toLowerCase().includes(normalizedName) || 
+        normalizedName.includes(name.toLowerCase())) {
+      return id;
+    }
+  }
+  
+  return null;
+}
 
 /**
  * Formatea una fecha ISO a formato legible
@@ -106,6 +186,38 @@ async function loadHistorial() {
 }
 
 /**
+ * Crea la celda de equipo con logo
+ */
+function createTeamCell(teamName) {
+  const td = document.createElement('td');
+  td.className = 'team-cell';
+  
+  const wrapper = document.createElement('div');
+  wrapper.className = 'team-with-logo';
+  
+  const teamId = getTeamIdByName(teamName);
+  
+  if (teamId) {
+    const img = document.createElement('img');
+    img.src = getLogoPath(teamId);
+    img.alt = teamName || '';
+    img.className = 'team-logo';
+    img.onerror = function() { 
+      this.style.display = 'none'; 
+    };
+    wrapper.appendChild(img);
+  }
+  
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'team-name';
+  nameSpan.textContent = teamName || '-';
+  wrapper.appendChild(nameSpan);
+  
+  td.appendChild(wrapper);
+  return td;
+}
+
+/**
  * Crea la caja de una jornada con su resumen y tabla
  */
 function createJornadaBox(jornada, apuestas) {
@@ -123,20 +235,20 @@ function createJornadaBox(jornada, apuestas) {
   resumen.className = 'jornada-resumen';
   resumen.innerHTML = `
     <div class="resumen-item">
-      <span class="label">Partidos acertados</span>
+      <span class="label">Aciertos</span>
       <span class="value">${datosResumen.acierto_puntos || 0}</span>
     </div>
     <div class="resumen-item">
-      <span class="label">Suma de cuotas</span>
+      <span class="label">Suma cuotas</span>
       <span class="value">${datosResumen.cuota_puntos ? parseFloat(datosResumen.cuota_puntos).toFixed(2).replace('.', ',') : '0,00'}</span>
     </div>
     <div class="resumen-item">
-      <span class="label">Puntos obtenidos</span>
+      <span class="label">Puntos</span>
       <span class="value">${datosResumen.resultado_puntos ? parseFloat(datosResumen.resultado_puntos).toFixed(2).replace('.', ',') : '0,00'}</span>
     </div>
   `;
   
-  // Tabla de apuestas
+  // Tabla de apuestas (con escudos)
   const tabla = document.createElement('table');
   tabla.className = 'tabla-jornada';
   tabla.innerHTML = `
@@ -144,12 +256,10 @@ function createJornadaBox(jornada, apuestas) {
       <tr>
         <th>Local</th>
         <th>Visitante</th>
-        <th>Pronóstico</th>
-        <th>Acierto</th>
-        <th class="hide-mobile">Día</th>
-        <th class="hide-mobile">Hora</th>
+        <th>Pron.</th>
+        <th>Res.</th>
         <th>Cuota</th>
-        <th>Resultado</th>
+        <th></th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -160,7 +270,34 @@ function createJornadaBox(jornada, apuestas) {
   apuestas.forEach(apuesta => {
     const fila = document.createElement('tr');
     
-    // Determinar icono de acierto
+    // Equipo Local con logo
+    const tdLocal = createTeamCell(apuesta.equipo_Local);
+    fila.appendChild(tdLocal);
+    
+    // Equipo Visitante con logo
+    const tdVisitante = createTeamCell(apuesta.equipo_Visitante);
+    fila.appendChild(tdVisitante);
+    
+    // Pronóstico
+    const tdPronostico = document.createElement('td');
+    tdPronostico.innerHTML = `<span class="pronostico-badge">${apuesta.pronostico || '-'}</span>`;
+    fila.appendChild(tdPronostico);
+    
+    // Resultado
+    const tdResultado = document.createElement('td');
+    tdResultado.className = 'resultado-value';
+    tdResultado.textContent = apuesta.resultado || '-';
+    fila.appendChild(tdResultado);
+    
+    // Cuota
+    const tdCuota = document.createElement('td');
+    tdCuota.className = 'cuota-value';
+    tdCuota.textContent = apuesta.cuota ? 
+      parseFloat(apuesta.cuota).toFixed(2).replace('.', ',') : '-';
+    fila.appendChild(tdCuota);
+    
+    // Acierto icon
+    const tdAcierto = document.createElement('td');
     let aciertoIcon = '';
     if (apuesta.acierto === true) {
       aciertoIcon = '<span class="acierto-icon correct">✅</span>';
@@ -169,21 +306,8 @@ function createJornadaBox(jornada, apuestas) {
     } else {
       aciertoIcon = '<span class="acierto-icon">⏳</span>';
     }
-    
-    // Formatear cuota con coma
-    const cuotaFormateada = apuesta.cuota ? 
-      parseFloat(apuesta.cuota).toFixed(2).replace('.', ',') : '-';
-    
-    fila.innerHTML = `
-      <td>${apuesta.equipo_Local || '-'}</td>
-      <td>${apuesta.equipo_Visitante || '-'}</td>
-      <td><span class="pronostico-badge">${apuesta.pronostico || '-'}</span></td>
-      <td>${aciertoIcon}</td>
-      <td class="hide-mobile">${formatearFecha(apuesta.dia)}</td>
-      <td class="hide-mobile">${formatearHora(apuesta.hora)}</td>
-      <td class="cuota-value">${cuotaFormateada}</td>
-      <td class="resultado-value">${apuesta.resultado || '-'}</td>
-    `;
+    tdAcierto.innerHTML = aciertoIcon;
+    fila.appendChild(tdAcierto);
     
     tbody.appendChild(fila);
   });

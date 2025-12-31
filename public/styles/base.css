@@ -1,5 +1,6 @@
 /* ============================================
    BASE STYLES - Variables y estilos compartidos
+   MOBILE OPTIMIZED
    ============================================ */
 
 :root {
@@ -82,7 +83,7 @@ body.with-bg-image {
 }
 
 /* ============================================
-   HEADER
+   HEADER - MOBILE OPTIMIZED
    ============================================ */
 
 .header {
@@ -106,11 +107,14 @@ body.with-bg-image {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
+  min-width: 0; /* Permite que el contenido se encoja */
+  flex: 1;
 }
 
 .header-left a {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .header img {
@@ -128,11 +132,15 @@ body.with-bg-image {
   color: var(--text-dark);
   margin: 0;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-right {
   display: flex;
   gap: var(--spacing-sm);
+  flex-shrink: 0;
 }
 
 .header-button {
@@ -149,6 +157,7 @@ body.with-bg-image {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 
 .header-button:hover {
@@ -440,7 +449,7 @@ body.with-bg-image {
 .mb-lg { margin-bottom: var(--spacing-lg); }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE - MOBILE OPTIMIZATIONS
    ============================================ */
 
 @media (max-width: 768px) {
@@ -457,7 +466,7 @@ body.with-bg-image {
   }
   
   .header h1 {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
   }
   
   .header-button {
@@ -481,11 +490,69 @@ body.with-bg-image {
 }
 
 @media (max-width: 480px) {
-  .header-left h1 {
+  :root {
+    --header-height: 3.5rem;
+  }
+  
+  .header {
+    padding: var(--spacing-xs);
+    gap: var(--spacing-xs);
+  }
+  
+  .header-left {
+    gap: var(--spacing-xs);
+  }
+  
+  .header img {
+    height: 2rem;
+  }
+  
+  /* IMPORTANTE: Mostrar bienvenida en móvil con formato compacto */
+  .header h1 {
+    font-size: 0.75rem;
+    display: block !important; /* Forzar que se muestre */
+  }
+  
+  /* Versión corta del mensaje en móviles muy pequeños */
+  .header h1 .welcome-text {
     display: none;
   }
   
   .header-right {
     gap: var(--spacing-xs);
+  }
+  
+  .header-button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Para pantallas muy estrechas, hacer header en dos líneas si es necesario */
+@media (max-width: 360px) {
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--header-height);
+    padding: var(--spacing-xs);
+  }
+  
+  .header-left {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .header h1 {
+    font-size: 0.7rem;
+  }
+  
+  .header-right {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .main-content {
+    padding-top: calc(5rem + var(--spacing-sm));
   }
 }

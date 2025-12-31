@@ -1,10 +1,10 @@
 /**
  * ============================================
- * APUESTAS.JS - VERSIÓN CORREGIDA
+ * APUESTAS.JS - VERSIÓN MOBILE OPTIMIZED
  * ============================================
- * Correcciones:
- * 1. Rutas de logos corregidas (ahora en /imagenes/)
- * 2. Manejo correcto de fechas/horas como strings
+ * Cambios:
+ * 1. Fecha y hora combinadas en una sola columna
+ * 2. Mejor responsive para móvil
  */
 
 const BettingState = {
@@ -41,49 +41,39 @@ async function checkIfAlreadyBet(jornada) {
 
 /**
  * Formatea la fecha - acepta varios formatos
- * @param {string} fecha - Puede ser "5/12/2025", "2025-12-05", ISO string, etc.
- * @returns {string} - Fecha formateada en español (D/M/YYYY)
  */
 function formatearFecha(fecha) {
   if (!fecha || fecha === 'Invalid Date') return '-';
   
-  // Si ya viene en formato día/mes/año, devolverlo tal cual
   if (typeof fecha === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fecha)) {
     return fecha;
   }
   
-  // Si viene en formato YYYY-MM-DD
   if (typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
     const parts = fecha.split('-');
-    return `${parseInt(parts[2], 10)}/${parseInt(parts[1], 10)}/${parts[0]}`;
+    return `${parseInt(parts[2], 10)}/${parseInt(parts[1], 10)}`;
   }
   
-  // Intentar parsear como fecha ISO o similar
   try {
     const date = new Date(fecha);
     if (!isNaN(date.getTime())) {
       const day = date.getDate();
       const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
+      return `${day}/${month}`;
     }
   } catch (e) {
-    // Ignorar error
+    // Ignorar
   }
   
-  // Devolver el valor original si no se puede parsear
   return fecha;
 }
 
 /**
- * Formatea la hora - acepta varios formatos
- * @param {string} hora - Puede ser "21:00", "21:00:00", ISO string, etc.
- * @returns {string} - Hora formateada HH:MM
+ * Formatea la hora
  */
 function formatearHora(hora) {
   if (!hora || hora === 'Invalid Date') return '-';
   
-  // Si ya viene en formato HH:MM o HH:MM:SS, extraer HH:MM
   if (typeof hora === 'string') {
     const match = hora.match(/(\d{1,2}):(\d{2})/);
     if (match) {
@@ -91,7 +81,6 @@ function formatearHora(hora) {
     }
   }
   
-  // Intentar parsear como fecha/hora ISO
   try {
     const date = new Date(hora);
     if (!isNaN(date.getTime())) {
@@ -100,22 +89,17 @@ function formatearHora(hora) {
       return `${hours}:${minutes}`;
     }
   } catch (e) {
-    // Ignorar error
+    // Ignorar
   }
   
-  // Devolver el valor original si no se puede parsear
   return hora;
 }
 
 /**
  * Obtiene la ruta del logo para un equipo
- * ACTUALIZADO: Ahora los logos están en /imagenes/
- * @param {number|string} teamId - ID del equipo
- * @returns {string} - Ruta al archivo de logo
  */
 function getLogoPath(teamId) {
   const id = parseInt(teamId, 10);
-  // Ruta actualizada: logos ahora en carpeta imagenes
   return `/imagenes/${id}.png`;
 }
 
@@ -135,9 +119,6 @@ async function loadMatches() {
     }
     
     BettingState.matches = data;
-    
-    // Debug: ver estructura de datos
-    console.log('Datos recibidos:', data[0]);
     
     let jornadaNum = '17';
     if (data[0] && data[0].Jornada) {
@@ -170,6 +151,9 @@ async function loadMatches() {
       return;
     }
     
+    // Actualizar cabecera de tabla para columna combinada fecha/hora
+    updateTableHeader();
+    
     data.forEach((partido, index) => {
       const tr = createMatchRow(partido, index);
       tablaBody.appendChild(tr);
@@ -191,18 +175,45 @@ async function loadMatches() {
   }
 }
 
+/**
+ * Actualiza la cabecera de la tabla para usar columna combinada
+ */
+function updateTableHeader() {
+  const thead = document.querySelector('#tablaApuestas thead tr');
+  if (thead) {
+    thead.innerHTML = `
+      <th>Fecha</th>
+      <th>Local</th>
+      <th>Visitante</th>
+      <th>Apuesta</th>
+    `;
+  }
+}
+
 function createMatchRow(partido, index) {
   const tr = document.createElement('tr');
   
-  // FECHA - Usar función de formateo
-  const tdFecha = document.createElement('td');
-  tdFecha.textContent = formatearFecha(partido.Fecha);
-  tr.appendChild(tdFecha);
+  // FECHA/HORA COMBINADA
+  const tdFechaHora = document.createElement('td');
+  tdFechaHora.className = 'datetime-cell';
+  const fechaFormateada = formatearFecha(partido.Fecha);
+  const horaFormateada = formatearHora(partido.Hora);
   
-  // HORA - Usar función de formateo  
-  const tdHora = document.createElement('td');
-  tdHora.textContent = formatearHora(partido.Hora);
-  tr.appendChild(tdHora);
+  const datetimeWrapper = document.createElement('div');
+  datetimeWrapper.className = 'datetime-wrapper';
+  
+  const dateSpan = document.createElement('span');
+  dateSpan.className = 'datetime-date';
+  dateSpan.textContent = fechaFormateada;
+  
+  const timeSpan = document.createElement('span');
+  timeSpan.className = 'datetime-time';
+  timeSpan.textContent = horaFormateada;
+  
+  datetimeWrapper.appendChild(dateSpan);
+  datetimeWrapper.appendChild(timeSpan);
+  tdFechaHora.appendChild(datetimeWrapper);
+  tr.appendChild(tdFechaHora);
   
   // LOCAL - Con logo
   const tdLocal = document.createElement('td');
@@ -217,7 +228,6 @@ function createMatchRow(partido, index) {
   imgLocal.className = 'team-logo';
   imgLocal.onerror = function() { 
     this.style.display = 'none'; 
-    console.log(`Logo no encontrado: ${this.src}`);
   };
   
   const spanLocal = document.createElement('span');
@@ -242,7 +252,6 @@ function createMatchRow(partido, index) {
   imgVisitante.className = 'team-logo';
   imgVisitante.onerror = function() { 
     this.style.display = 'none';
-    console.log(`Logo no encontrado: ${this.src}`);
   };
   
   const spanVisitante = document.createElement('span');

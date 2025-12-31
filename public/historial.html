@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Quiniela - Historial de apuestas">
   <title>Quiniela - Mis Apuestas</title>
   
@@ -25,11 +25,11 @@
       <a href="lobby.html">
         <img src="imagenes/logo.png" onerror="this.onerror=null; this.src='imagenes/logo.svg';" alt="Logo Quiniela">
       </a>
-      <h1>Mis Apuestas</h1>
+      <h1>Hola, <span id="nombre-usuario"></span></h1>
     </div>
     <div class="header-right">
       <button id="cerrar-sesion" class="header-button">
-        Cerrar sesión
+        Salir
       </button>
     </div>
   </header>
@@ -46,6 +46,11 @@
     
     <!-- Jornadas Container -->
     <div id="contenedor-jornadas" class="historial-container hidden"></div>
+    
+    <!-- Botón volver -->
+    <div class="submit-container" style="margin-top: 1rem;">
+      <a href="options_apuestas.html" class="btn">← Volver</a>
+    </div>
   </main>
 
   <script src="js/auth.js"></script>

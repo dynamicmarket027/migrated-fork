@@ -1,8 +1,8 @@
 /**
  * ============================================
- * APUESTA-ACTUAL.JS
+ * APUESTA-ACTUAL.JS - MOBILE OPTIMIZED
  * ============================================
- * ACTUALIZADO: Incluye logos de equipos
+ * Con logos de equipos y mejor responsive
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,11 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Obtiene la ruta del logo para un equipo
- * @param {number|string} teamId - ID del equipo
- * @returns {string} - Ruta al archivo de logo
  */
 function getLogoPath(teamId) {
+  if (!teamId) return null;
   const id = parseInt(teamId, 10);
+  if (isNaN(id)) return null;
   return `/imagenes/${id}.png`;
 }
 
@@ -68,13 +68,14 @@ async function loadApuestaActual() {
       numJornada.textContent = `JORNADA ${jornadaActual}`;
     }
     
-    let aciertos = 0, fallos = 0, pendientes = 0, sumaCuotas = 0, puntosObtenidos = 0;
+    // Calcular estadísticas
+    let aciertos = 0, fallos = 0, pendientes = 0;
+    let sumaCuotasAcertadas = 0;
     
     apuestas.forEach(apuesta => {
-      sumaCuotas += parseFloat(apuesta.odds) || 0;
       if (apuesta.correct === true) {
         aciertos++;
-        puntosObtenidos += parseFloat(apuesta.odds) || 0;
+        sumaCuotasAcertadas += parseFloat(apuesta.odds) || 0;
       } else if (apuesta.correct === false) {
         fallos++;
       } else {
@@ -82,20 +83,24 @@ async function loadApuestaActual() {
       }
     });
     
+    // Calcular puntos: aciertos * suma de cuotas acertadas
+    const puntosObtenidos = aciertos * sumaCuotasAcertadas;
+    
+    // Renderizar resumen
     if (resumenApuesta) {
       resumenApuesta.innerHTML = `
         <div class="resumen-grid">
           <div class="resumen-item">
-            <span class="resumen-label">Partidos jugados</span>
-            <span class="resumen-value">${aciertos + fallos} / ${apuestas.length}</span>
+            <span class="resumen-label">Jugados</span>
+            <span class="resumen-value">${aciertos + fallos}/${apuestas.length}</span>
           </div>
           <div class="resumen-item">
             <span class="resumen-label">Aciertos</span>
             <span class="resumen-value">${aciertos}</span>
           </div>
           <div class="resumen-item">
-            <span class="resumen-label">Suma cuotas</span>
-            <span class="resumen-value">${sumaCuotas.toFixed(2).replace('.', ',')}</span>
+            <span class="resumen-label">Σ Cuotas</span>
+            <span class="resumen-value">${sumaCuotasAcertadas.toFixed(2).replace('.', ',')}</span>
           </div>
           <div class="resumen-item">
             <span class="resumen-label">Puntos</span>
@@ -105,25 +110,21 @@ async function loadApuestaActual() {
       `;
     }
     
+    // Renderizar cada apuesta
     apuestas.forEach(apuesta => {
       const tr = document.createElement('tr');
       const tieneResultado = apuesta.actualResult && apuesta.actualResult !== '';
       
-      let aciertoIcon = '<span class="estado-pendiente">⏳</span>';
+      // Asignar clase según acierto
       if (tieneResultado) {
         if (apuesta.correct === true) {
-          aciertoIcon = '<span class="estado-acierto">✅</span>';
           tr.classList.add('fila-acierto');
         } else if (apuesta.correct === false) {
-          aciertoIcon = '<span class="estado-fallo">❌</span>';
           tr.classList.add('fila-fallo');
         }
       }
       
-      const cuotaFormateada = parseFloat(apuesta.odds).toFixed(2).replace('.', ',');
-      const resultadoDisplay = tieneResultado ? apuesta.actualResult : '<span class="pendiente">Por jugar</span>';
-      
-      // Crear celda LOCAL con logo
+      // CELDA LOCAL con logo
       const tdLocal = document.createElement('td');
       tdLocal.className = 'team-cell';
       const localWrapper = document.createElement('div');
@@ -143,8 +144,9 @@ async function loadApuestaActual() {
       spanLocal.textContent = apuesta.homeTeam || '-';
       localWrapper.appendChild(spanLocal);
       tdLocal.appendChild(localWrapper);
+      tr.appendChild(tdLocal);
       
-      // Crear celda VISITANTE con logo
+      // CELDA VISITANTE con logo
       const tdVisitante = document.createElement('td');
       tdVisitante.className = 'team-cell';
       const visitanteWrapper = document.createElement('div');
@@ -164,30 +166,39 @@ async function loadApuestaActual() {
       spanVisitante.textContent = apuesta.awayTeam || '-';
       visitanteWrapper.appendChild(spanVisitante);
       tdVisitante.appendChild(visitanteWrapper);
-      
-      // Construir fila completa
-      tr.appendChild(tdLocal);
       tr.appendChild(tdVisitante);
       
-      // Pronóstico
+      // PRONÓSTICO
       const tdPronostico = document.createElement('td');
       tdPronostico.innerHTML = `<span class="pronostico-badge">${apuesta.prediction || '-'}</span>`;
       tr.appendChild(tdPronostico);
       
-      // Cuota
+      // CUOTA
       const tdCuota = document.createElement('td');
       tdCuota.className = 'cuota-value';
-      tdCuota.textContent = cuotaFormateada;
+      tdCuota.textContent = parseFloat(apuesta.odds).toFixed(2).replace('.', ',');
       tr.appendChild(tdCuota);
       
-      // Resultado
+      // RESULTADO
       const tdResultado = document.createElement('td');
       tdResultado.className = 'resultado-value';
-      tdResultado.innerHTML = resultadoDisplay;
+      if (tieneResultado) {
+        tdResultado.textContent = apuesta.actualResult;
+      } else {
+        tdResultado.innerHTML = '<span class="pendiente">-</span>';
+      }
       tr.appendChild(tdResultado);
       
-      // Acierto
+      // ACIERTO
       const tdAcierto = document.createElement('td');
+      let aciertoIcon = '<span class="estado-pendiente">⏳</span>';
+      if (tieneResultado) {
+        if (apuesta.correct === true) {
+          aciertoIcon = '<span class="estado-acierto">✅</span>';
+        } else if (apuesta.correct === false) {
+          aciertoIcon = '<span class="estado-fallo">❌</span>';
+        }
+      }
       tdAcierto.innerHTML = aciertoIcon;
       tr.appendChild(tdAcierto);
       
