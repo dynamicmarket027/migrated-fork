@@ -1,0 +1,15 @@
+
+AHORA:
+Tambien quiero que modifiques por completo el front end de Clasificacion jugadores para que sea visualmente más bonito. Quiero que realces de mas a menos los 3 primeros de la clasficacion siendo el primero el mas grande, el segundo el segundo mas grande, el tercero el tercero mass grande y los demas del mismo tamaño y mas pequeños que el tercero. Tambien quiero que juegues con los colores de los primeros de la clasificacion para que se vean de oro, plata y bronce.
+
+
+NEXT:
+Por ultimo es muy importante que la pagina se vea perfectamente desde el movil, cosas a mejorar:
+
+En el login el formulario blanco no se ve entero tienes que hacer que quepa todo en la pantalla sin scrollear ajustandose al tamaño de cada pantalla.
+
+Desde el movil no se ve el mensaje de arriba de bienvenido <nombre usuario>
+
+Ver apuesta actual se ve fatal, el cuadro de los puntos no es del mismo tamaño que el de los pronosticos. Haz que sean del mismo tamaño y se vean sin scrollear hacia los laterales. para ello puedes reorganizar la info a mostrar de la mejor forma que creas posible. Basate en la pestaña de ver historial, las jornadas pasadas y sus puntos se ven perfectamente desde el movil, pero necesito tambien que incluyas en ver historial los escudos de cada equipo.
+
+Al realizar la apuesta desde el movil se necesita scrollear al lateral para ver el formulario completo, compactalo para que no sea asi. Junta las columnas fecha y hora para ahorrar espacio.

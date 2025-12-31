@@ -17,9 +17,6 @@
 [functions."*"]
   external_node_modules = ["bcryptjs", "@supabase/supabase-js"]
 
-# NOTA: Ya no se necesita scheduled-update porque los datos vienen de Supabase
-# Si necesitas actualizar datos, hazlo directamente en Supabase
-
 # Security headers
 [[headers]]
   for = "/*"
@@ -30,27 +27,44 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.netlify.app https://*.supabase.co"
 
-# Cache for static assets
+# ═══════════════════════════════════════════════════════════════
+# NO CACHE - Forzar recarga siempre (útil para desarrollo)
+# ═══════════════════════════════════════════════════════════════
+
 [[headers]]
   for = "/styles/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
 
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
 
 [[headers]]
   for = "/imagenes/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
 
-# No cache for data files
 [[headers]]
   for = "/data/*"
   [headers.values]
-    Cache-Control = "public, max-age=60"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
 
 # API endpoints
 [[redirects]]
