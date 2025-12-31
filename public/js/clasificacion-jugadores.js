@@ -1,17 +1,11 @@
 /**
  * ============================================
- * CLASIFICACION-JUGADORES.JS
+ * CLASIFICACION-JUGADORES.JS - PREMIUM PODIUM VERSION
  * ============================================
- * Carga y muestra la clasificación de jugadores
+ * Carga y muestra la clasificación con podio destacado
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  const tablaContainer = document.getElementById('tabla-container');
-  const loadingContainer = document.getElementById('loading-container');
-  const tablaBody = document.getElementById('bodyRows');
-  
-  if (!tablaContainer || !loadingContainer || !tablaBody) return;
-  
   loadClasificacionJugadores();
 });
 
@@ -19,75 +13,124 @@ document.addEventListener('DOMContentLoaded', () => {
  * Carga los datos de clasificación de jugadores
  */
 async function loadClasificacionJugadores() {
-  const tablaContainer = document.getElementById('tabla-container');
   const loadingContainer = document.getElementById('loading-container');
-  const tablaBody = document.getElementById('bodyRows');
+  const podiumSection = document.getElementById('podium-section');
+  const restSection = document.getElementById('rest-section');
+  const playersList = document.getElementById('players-list');
   
   try {
     const response = await fetch(API_URLS.clasificacionJugadores);
     const data = await response.json();
     
+    if (!data || data.length === 0) {
+      loadingContainer.innerHTML = `
+        <p style="color: rgba(255,255,255,0.7);">No hay datos de clasificación disponibles.</p>
+        <a href="lobby.html" class="btn-back" style="margin-top: 1rem;">Volver</a>
+      `;
+      return;
+    }
+    
     // Ordenar por puntos descendente
     data.sort((a, b) => parseFloat(b["Puntos ganados"]) - parseFloat(a["Puntos ganados"]));
     
-    const total = data.length;
-    
-    data.forEach((row, index) => {
-      const tr = document.createElement('tr');
+    // Populate Top 3 (Podium)
+    const top3 = data.slice(0, 3);
+    top3.forEach((player, index) => {
+      const position = index + 1;
+      const name = player["Jugador"] || 'Jugador';
+      const points = parseFloat(player["Puntos ganados"]) || 0;
+      const hits = player["Aciertos"] || 0;
       
-      // Asignar clase según posición
-      tr.className = getRowClass(index, total);
+      // Set avatar letter
+      const avatarEl = document.getElementById(`avatar-${position}`);
+      if (avatarEl) {
+        avatarEl.textContent = name.charAt(0).toUpperCase();
+      }
       
-      // Posición
-      const tdPosicion = document.createElement('td');
-      tdPosicion.textContent = index + 1;
-      tr.appendChild(tdPosicion);
+      // Set name
+      const nameEl = document.getElementById(`name-${position}`);
+      if (nameEl) {
+        nameEl.textContent = name;
+      }
       
-      // Jugador
-      const tdJugador = document.createElement('td');
-      tdJugador.textContent = row["Jugador"] || '';
-      tr.appendChild(tdJugador);
+      // Set points
+      const pointsEl = document.getElementById(`points-${position}`);
+      if (pointsEl) {
+        pointsEl.textContent = formatPoints(points);
+      }
       
-      // Puntos ganados
-      const tdPuntos = document.createElement('td');
-      const puntos = parseFloat(row["Puntos ganados"]);
-      tdPuntos.textContent = isNaN(puntos) ? '0.00' : puntos.toFixed(2);
-      tr.appendChild(tdPuntos);
-      
-      // Aciertos
-      const tdAciertos = document.createElement('td');
-      tdAciertos.textContent = row["Aciertos"] || 0;
-      tr.appendChild(tdAciertos);
-      
-      // Apuestas realizadas
-      const tdApuestas = document.createElement('td');
-      tdApuestas.className = 'hide-mobile';
-      tdApuestas.textContent = row["Apuestas realizadas"] || 0;
-      tr.appendChild(tdApuestas);
-      
-      tablaBody.appendChild(tr);
+      // Set hits
+      const hitsEl = document.getElementById(`hits-${position}`);
+      if (hitsEl) {
+        hitsEl.textContent = hits;
+      }
     });
     
-    // Mostrar tabla y ocultar loader
+    // Populate rest of players (4th onwards)
+    const restPlayers = data.slice(3);
+    restPlayers.forEach((player, index) => {
+      const position = index + 4;
+      const name = player["Jugador"] || 'Jugador';
+      const points = parseFloat(player["Puntos ganados"]) || 0;
+      const hits = player["Aciertos"] || 0;
+      const bets = player["Apuestas realizadas"] || 0;
+      
+      const playerRow = createPlayerRow(position, name, points, hits, bets);
+      playersList.appendChild(playerRow);
+    });
+    
+    // Show sections with animation
     loadingContainer.classList.add('hidden');
-    tablaContainer.classList.remove('hidden');
+    podiumSection.classList.remove('hidden');
+    
+    if (restPlayers.length > 0) {
+      restSection.classList.remove('hidden');
+    }
     
   } catch (error) {
     console.error('Error cargando clasificación:', error);
     loadingContainer.innerHTML = `
-      <p style="color: var(--text-error);">Error cargando la clasificación.</p>
-      <button class="btn" onclick="location.reload()">Reintentar</button>
+      <p style="color: #ef5350;">Error cargando la clasificación.</p>
+      <button class="btn-back" onclick="location.reload()" style="margin-top: 1rem;">Reintentar</button>
     `;
   }
 }
 
 /**
- * Devuelve la clase CSS según la posición
+ * Creates a player row element for players 4th and beyond
  */
-function getRowClass(index, total) {
-  if (index === 0) return 'fila-oro';
-  if (index === 1) return 'fila-plata';
-  if (index === 2) return 'fila-bronce';
-  if (index >= total - 3) return 'fila-ultima';
-  return 'fila-azul';
+function createPlayerRow(position, name, points, hits, bets) {
+  const row = document.createElement('div');
+  row.className = 'player-row';
+  
+  row.innerHTML = `
+    <div class="player-position">${position}</div>
+    <div class="player-avatar-small">${name.charAt(0).toUpperCase()}</div>
+    <div class="player-info">
+      <p class="player-name">${escapeHtml(name)}</p>
+      <p class="player-meta">${hits} aciertos · ${bets} jornadas</p>
+    </div>
+    <div class="player-points">
+      <div class="points-value">${formatPoints(points)}</div>
+      <div class="points-label">pts</div>
+    </div>
+  `;
+  
+  return row;
+}
+
+/**
+ * Formats points with Spanish decimal separator
+ */
+function formatPoints(points) {
+  return points.toFixed(2).replace('.', ',');
+}
+
+/**
+ * Escapes HTML to prevent XSS
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }

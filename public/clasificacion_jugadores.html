@@ -9,16 +9,16 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
   
   <!-- Styles -->
   <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/clasificacion.css">
+  <link rel="stylesheet" href="styles/clasificacion-jugadores.css">
   
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="imagenes/logo.png">
 </head>
-<body class="clasificacion-page">
+<body class="clasificacion-jugadores-page">
   <!-- Header -->
   <header class="header">
     <div class="header-left">
@@ -36,28 +36,94 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <h1 class="page-title">Clasificación de Jugadores</h1>
+    <div class="page-header">
+      <h1 class="page-title">🏆 Ranking de Jugadores</h1>
+      <p class="page-subtitle">Temporada 2024-25</p>
+    </div>
     
     <!-- Loading State -->
     <div id="loading-container" class="loading-container">
-      <img src="imagenes/loading.gif" onerror="this.onerror=null; this.src='imagenes/loading.svg';" alt="Cargando...">
+      <div class="loader-spinner"></div>
       <p>Cargando clasificación...</p>
     </div>
     
-    <!-- Table Container -->
-    <div id="tabla-container" class="clasificacion-container hidden">
-      <table id="tablaClasificacion" class="clasificacion-tabla">
-        <thead>
-          <tr>
-            <th>Pos</th>
-            <th>Jugador</th>
-            <th>Puntos</th>
-            <th>Aciertos</th>
-            <th class="hide-mobile">Apuestas</th>
-          </tr>
-        </thead>
-        <tbody id="bodyRows"></tbody>
-      </table>
+    <!-- Podium Section (Top 3) -->
+    <section id="podium-section" class="podium-section hidden">
+      <div class="podium-container">
+        <!-- 2nd Place -->
+        <div class="podium-card podium-silver" data-position="2">
+          <div class="podium-medal">🥈</div>
+          <div class="podium-rank">2</div>
+          <div class="podium-avatar">
+            <span class="avatar-letter" id="avatar-2"></span>
+          </div>
+          <h3 class="podium-name" id="name-2">-</h3>
+          <div class="podium-stats">
+            <div class="stat-main">
+              <span class="stat-value" id="points-2">0</span>
+              <span class="stat-label">puntos</span>
+            </div>
+            <div class="stat-secondary">
+              <span id="hits-2">0</span> aciertos
+            </div>
+          </div>
+          <div class="podium-base silver-base"></div>
+        </div>
+        
+        <!-- 1st Place (Center, Elevated) -->
+        <div class="podium-card podium-gold" data-position="1">
+          <div class="crown-icon">👑</div>
+          <div class="podium-medal">🥇</div>
+          <div class="podium-rank">1</div>
+          <div class="podium-avatar gold-avatar">
+            <span class="avatar-letter" id="avatar-1"></span>
+          </div>
+          <h3 class="podium-name" id="name-1">-</h3>
+          <div class="podium-stats">
+            <div class="stat-main">
+              <span class="stat-value" id="points-1">0</span>
+              <span class="stat-label">puntos</span>
+            </div>
+            <div class="stat-secondary">
+              <span id="hits-1">0</span> aciertos
+            </div>
+          </div>
+          <div class="podium-base gold-base"></div>
+        </div>
+        
+        <!-- 3rd Place -->
+        <div class="podium-card podium-bronze" data-position="3">
+          <div class="podium-medal">🥉</div>
+          <div class="podium-rank">3</div>
+          <div class="podium-avatar">
+            <span class="avatar-letter" id="avatar-3"></span>
+          </div>
+          <h3 class="podium-name" id="name-3">-</h3>
+          <div class="podium-stats">
+            <div class="stat-main">
+              <span class="stat-value" id="points-3">0</span>
+              <span class="stat-label">puntos</span>
+            </div>
+            <div class="stat-secondary">
+              <span id="hits-3">0</span> aciertos
+            </div>
+          </div>
+          <div class="podium-base bronze-base"></div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Rest of Players -->
+    <section id="rest-section" class="rest-section hidden">
+      <h2 class="section-title">Resto de participantes</h2>
+      <div class="players-list" id="players-list">
+        <!-- Players 4+ will be inserted here -->
+      </div>
+    </section>
+    
+    <!-- Back Button -->
+    <div class="back-container">
+      <a href="options_clasificacion.html" class="btn-back">← Volver</a>
     </div>
   </main>
 
