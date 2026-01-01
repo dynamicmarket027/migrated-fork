@@ -3,7 +3,7 @@
  * CLASIFICACION-JUGADORES.JS - PREMIUM PODIUM VERSION
  * ============================================
  * Carga y muestra la clasificación con podio destacado
- * MODIFICADO: En móvil muestra aciertos y jornadas en lugar de "pts"
+ * ACTUALIZADO: Nuevo diseño de filas con nombre arriba y stats abajo a la derecha
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -119,26 +119,23 @@ async function loadClasificacionJugadores() {
 
 /**
  * Creates a player row element for players 4th and beyond
- * MODIFICADO: Añade stats para móvil con aciertos y jornadas
+ * NUEVO DISEÑO:
+ * - Fila superior: posición + avatar + nombre (alineado a izquierda)
+ * - Debajo: stats alineados a la derecha
  */
 function createPlayerRow(position, name, points, hits, bets) {
   const row = document.createElement('div');
   row.className = 'player-row';
   
   row.innerHTML = `
-    <div class="player-position">${position}</div>
-    <div class="player-avatar-small">${name.charAt(0).toUpperCase()}</div>
-    <div class="player-info">
+    <div class="player-row-top">
+      <div class="player-position">${position}</div>
+      <div class="player-avatar-small">${name.charAt(0).toUpperCase()}</div>
       <p class="player-name">${escapeHtml(name)}</p>
-      <p class="player-meta">${hits} aciertos · ${bets} jornadas</p>
     </div>
-    <div class="player-points">
-      <div class="points-value">${formatPoints(points)}</div>
-      <div class="points-label">pts</div>
-    </div>
-    <div class="player-stats-mobile">
-      <div class="stat-line">Aciertos: <span class="stat-number">${hits}</span></div>
-      <div class="stat-line">Jornadas apostadas: <span class="stat-number">${bets}</span></div>
+    <div class="player-stats-right">
+      <div class="stat-line">Aciertos:<span class="stat-number">${hits}</span></div>
+      <div class="stat-line">Jornadas apostadas:<span class="stat-number">${bets}</span></div>
     </div>
   `;
   
