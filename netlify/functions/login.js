@@ -34,7 +34,9 @@ const USERS = [
   { "username": "Atorres", "password": "12345" },
   { "username": "fricobets", "password": "12345" },
   { "username": "Riete13", "password": "Mtg1305" },
-  { "username": "BailaVini", "password": "yoquese123" }
+  { "username": "BailaVini", "password": "yoquese123" },
+  { "username": "Salicon", "password": "5061" },
+  { "username": "Hunter2025", "password": "Tardi@+" }
 ];
 
 export async function handler(event) {
